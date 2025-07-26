@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BadDevAthro&#x27;s server - Tech Community Forum</title>
+    <meta name="description" content="Community forum featuring 3 discussions across 1 channels from BadDevAthro&#x27;s server. Join the conversation!">
+        <meta name="keywords" content="tech, programming, development, software, coding, community">
+        <meta name="author" content="BadDevAthro&#x27;s server">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="BadDevAthro&#x27;s server - Tech Community Forum">
+    <meta property="og:description" content="Community forum featuring 3 discussions across 1 channels from BadDevAthro&#x27;s server. Join the conversation!">
+    <meta property="og:url" content="/">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="BadDevAthro&#x27;s server - Tech Community Forum">
+    <meta property="twitter:description" content="Community forum featuring 3 discussions across 1 channels from BadDevAthro&#x27;s server. Join the conversation!">
+    
+    <link rel="stylesheet" href="/test/assets/style.css">
+        <link rel="icon" href="/test/assets/favicon.ico">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+        <style>
+            :root {
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+            }
+        </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="nav-brand">
+                        <i class="fas fa-gamepad"></i>
+                    <h1><a href="/test/" style="text-decoration: none; color: inherit;">BadDevAthro&#x27;s server</a></h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="/test/">Home</a></li>
+                    <li><a href="/test/search.html" class="active">Search</a></li>
+                        <li><a href="/test/leaderboard.html">Top Players</a></li>
+                    <li><a href="/test/#channels">Channels</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="search-container">
+                <header class="page-header">
+                    <h1><i class="fas fa-search"></i> Search Discussions</h1>
+                    <p>Find threads, posts, and users in our community</p>
+                </header>
+
+                <div class="search-form">
+                    <input type="text" id="searchInput" class="search-box" placeholder="Search for discussions, users, or topics...">
+                    <div class="search-filters">
+                        <label>
+                            <input type="radio" name="searchType" value="all" checked> All
+                        </label>
+                        <label>
+                            <input type="radio" name="searchType" value="thread"> Threads
+                        </label>
+                        <label>
+                            <input type="radio" name="searchType" value="user"> Users
+                        </label>
+                        <label>
+                            <input type="radio" name="searchType" value="channel"> Channels
+                        </label>
+                    </div>
+                </div>
+
+                <div class="search-results" id="searchResults">
+                    <div class="search-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Start typing to search through discussions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BadDevAthro&#x27;s server</h4>
+                    <p>The ultimate gaming community hub powered by Discord discussions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="/test/">Home</a></li>
+                        <li><a href="/test/search.html">Search</a></li>
+                            <li><a href="/test/leaderboard.html">Top Players</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Community</h4>
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BadDevAthro&#x27;s server. Level up with our gaming community!</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Search functionality
+        let searchIndex = null;
+        
+        // Load search index
+        fetch('/test/search-index.json')
+            .then(response => response.json())
+            .then(data => {
+                searchIndex = data.index;
+                console.log('Search index loaded:', data.stats);
+            })
+            .catch(error => console.error('Failed to load search index:', error));
+
+        function performSearch(query, type = 'all') {
+            if (!searchIndex || !query.trim()) {
+                return [];
+            }
+
+            const searchTerms = query.toLowerCase().split(' ');
+            const results = [];
+
+            for (const item of searchIndex) {
+                if (type !== 'all' && item.type !== type) continue;
+
+                const searchableContent = (item.title + ' ' + item.content + ' ' + item.author).toLowerCase();
+                const matches = searchTerms.every(term => searchableContent.includes(term));
+
+                if (matches) {
+                    results.push(item);
+                }
+            }
+
+            return results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+
+        function renderSearchResults(results) {
+            const container = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = `
+                    <div class="search-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>No results found. Try different search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const baseUrl = '/test/';
+            const resultHtml = results.map(item => `
+                <div class="search-result">
+                    <h4><a href="${baseUrl}${item.url}">${item.title}</a></h4>
+                    <p>${item.content.substring(0, 200)}...</p>
+                    <div class="search-result-meta">
+                        <span class="result-type">${item.type}</span>
+                        <span class="result-author">by ${item.author}</span>
+                        <span class="result-date">${new Date(item.created_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = resultHtml;
+        }
+
+        // Search input handler
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value;
+            const type = document.querySelector('input[name="searchType"]:checked').value;
+            
+            if (query.length < 2) {
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="search-placeholder">
+                        <i class="fas fa-search"></i>
+                        <p>Start typing to search through discussions...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const results = performSearch(query, type);
+            renderSearchResults(results);
+        });
+
+        // Filter change handler
+        document.querySelectorAll('input[name="searchType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const query = document.getElementById('searchInput').value;
+                if (query.length >= 2) {
+                    const results = performSearch(query, this.value);
+                    renderSearchResults(results);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
